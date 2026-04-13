@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Explorer Mission — هل أنت مستعد لاستكشاف عالم الذكاء الاصطناعي؟</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,Arial,sans-serif;background:#000;min-height:100vh;}
+#app{width:100%;min-height:100vh;background:#000;position:relative;overflow-x:hidden;}
+.screen{display:none;width:100%;min-height:100vh;position:relative;overflow:hidden;}
+.screen.active{display:block;}
+.starfield{position:absolute;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;}
+.star.tw{animation:tw var(--d,2s) ease-in-out infinite var(--dl,0s);}
+@keyframes tw{0%,100%{opacity:var(--lo,.2);}50%{opacity:1;}}
+.star.sh{animation:sh 5s ease-in infinite var(--dl,0s);}
+@keyframes sh{0%{opacity:0;transform:translate(0,0);}6%{opacity:1;}35%{opacity:0;transform:translate(-100px,50px);}100%{opacity:0;}}
+.nring{position:absolute;border-radius:50%;border:1px solid rgba(57,255,20,0.07);animation:nr var(--nd,6s) ease-in-out infinite var(--ndd,0s);}
+@keyframes nr{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}50%{opacity:.85;transform:translate(-50%,-50%) scale(1.06);}}
+.pt{position:absolute;border-radius:50%;background:#39FF14;animation:pt var(--pd,7s) ease-in-out infinite var(--pdd,0s);}
+@keyframes pt{0%,100%{transform:translate(0,0);opacity:.25;}50%{transform:translate(var(--px,8px),var(--py,-16px));opacity:.85;}}
+.fade-up{animation:fup .45s ease both;}
+@keyframes fup{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.content{position:relative;z-index:2;padding:26px 22px 22px;}
+
+/* HOME */
+.badge-pill{display:inline-block;background:#39FF14;color:#000;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:.05em;animation:pop .5s ease .1s both;}
+@keyframes pop{from{opacity:0;transform:scale(.75);}to{opacity:1;transform:scale(1);}}
+.home-rocket{font-size:64px;display:block;filter:drop-shadow(0 0 18px rgba(57,255,20,.7));animation:hover 2.8s ease-in-out infinite,pop .6s ease .3s both;}
+@keyframes hover{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.home-title-ar{font-size:28px;font-weight:900;color:#39FF14;line-height:1.2;text-shadow:0 0 28px rgba(57,255,20,.35);animation:fup .5s ease .4s both;}
+.home-title-en{font-size:12px;color:#39FF14;opacity:.45;font-weight:600;margin-bottom:20px;animation:fup .5s ease .55s both;}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;animation:fup .5s ease .7s both;max-width:340px;margin-left:auto;margin-right:auto;}
+.lcard{background:rgba(57,255,20,.06);border:1.5px solid rgba(57,255,20,.25);border-radius:13px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.lcard:hover{background:rgba(57,255,20,.16);border-color:rgba(57,255,20,.7);transform:translateY(-3px);}
+.lcard-flag{font-size:22px;margin-bottom:5px;line-height:1;}
+.lcard-name{font-size:17px;font-weight:900;color:#39FF14;}
+.lcard-hint{font-size:11px;color:#39FF14;opacity:.4;margin-top:1px;}
+.soc-row{display:flex;justify-content:center;gap:7px;animation:fup .5s ease .9s both;}
+.si{width:28px;height:28px;background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.si:hover{background:rgba(57,255,20,.2);border-color:rgba(57,255,20,.6);}
+.si svg{width:13px;height:13px;fill:#39FF14;}
+.hhandle{font-size:10px;color:#39FF14;opacity:.25;text-align:center;margin-top:8px;letter-spacing:.03em;animation:fup .5s ease 1s both;}
+.orb{position:absolute;border-radius:50%;border:1px dashed rgba(57,255,20,.14);animation:orb var(--os,12s) linear infinite;}
+@keyframes orb{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.orb-sat{position:absolute;top:-10px;left:50%;margin-left:-10px;font-size:18px;line-height:1;}
+.fly-robot{position:absolute;font-size:24px;filter:drop-shadow(0 0 6px rgba(57,255,20,.5));animation:fly 9s ease-in-out infinite;z-index:1;}
+@keyframes fly{0%{top:18%;left:-8%;opacity:0;}8%{opacity:1;}42%{top:8%;left:92%;opacity:1;}50%,100%{opacity:0;left:92%;}}
+
+/* INTRO */
+.mission-badge{display:inline-block;background:rgba(57,255,20,.12);border:1px solid rgba(57,255,20,.4);color:#39FF14;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:.05em;margin-bottom:10px;}
+.mission-icon{font-size:40px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(57,255,20,.6));animation:hover 3s ease-in-out infinite;}
+.mission-title-ar{font-size:24px;font-weight:900;color:#39FF14;line-height:1.25;margin-bottom:2px;}
+.mission-title-en{font-size:12px;color:#39FF14;opacity:.45;font-weight:600;margin-bottom:10px;}
+.mission-p{font-size:13px;color:#39FF14;opacity:.65;line-height:1.75;margin-bottom:16px;}
+.ranks-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:16px;}
+.rank-card{background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.18);border-radius:9px;padding:8px 4px;text-align:center;}
+.rank-icon{font-size:18px;display:block;margin-bottom:3px;line-height:1;}
+.rank-ar{font-size:11px;font-weight:800;color:#39FF14;}
+.rank-en{font-size:9px;color:#39FF14;opacity:.45;margin-top:1px;}
+.role-lbl{font-size:12px;font-weight:800;color:#39FF14;margin-bottom:7px;opacity:.8;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+.rbtn{background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.2);border-radius:9px;padding:9px 8px;cursor:pointer;font-size:12px;font-weight:700;color:#39FF14;font-family:inherit;line-height:1.3;transition:all .15s;}
+.rbtn:hover{background:rgba(57,255,20,.18);border-color:rgba(57,255,20,.6);}
+.rbtn.picked{background:#39FF14;color:#000;border-color:#39FF14;}
+.launch-btn{width:100%;padding:13px;background:#39FF14;color:#000;border:none;border-radius:12px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;transition:all .15s;letter-spacing:.02em;}
+.launch-btn:hover{background:#2ee010;}
+.launch-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* QUESTION */
+.mission-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.mission-tag{font-size:10px;font-weight:800;color:#39FF14;opacity:.55;text-transform:uppercase;letter-spacing:.08em;background:rgba(57,255,20,.08);padding:3px 10px;border-radius:10px;}
+.mission-num{font-size:11px;font-weight:900;color:#39FF14;opacity:.7;}
+.prog-wrap{margin-bottom:12px;}
+.prog-track{height:4px;background:rgba(57,255,20,.15);border-radius:2px;overflow:hidden;}
+.prog-bar{height:100%;background:#39FF14;border-radius:2px;transition:width .5s ease;}
+.dots{display:flex;gap:4px;justify-content:center;margin-top:6px;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(57,255,20,.15);transition:all .3s;}
+.dot.done{background:#39FF14;}.dot.now{background:#39FF14;box-shadow:0 0 0 3px rgba(57,255,20,.2);}
+.q-sticker{font-size:30px;display:block;margin-bottom:5px;filter:drop-shadow(0 0 8px rgba(57,255,20,.4));}
+.q-cat{font-size:10px;font-weight:800;color:#39FF14;opacity:.45;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.q-title-ar{font-size:19px;font-weight:900;color:#39FF14;line-height:1.35;margin-bottom:2px;}
+.q-title-en{font-size:11px;color:#39FF14;opacity:.4;font-weight:600;margin-bottom:7px;line-height:1.4;}
+.q-ins{font-size:11px;color:#39FF14;opacity:.5;line-height:1.6;padding:6px 10px;background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.12);border-radius:8px;margin-bottom:11px;}
+.opts{display:flex;flex-direction:column;gap:6px;}
+.opt{background:rgba(57,255,20,.05);border:1px solid rgba(57,255,20,.18);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;align-items:flex-start;gap:9px;transition:all .15s;width:100%;}
+.opt:hover{background:rgba(57,255,20,.14);border-color:rgba(57,255,20,.55);}
+.opt.chosen{background:rgba(57,255,20,.18);border-color:#39FF14;box-shadow:0 0 0 1px rgba(57,255,20,.3);}
+.opt-num{width:22px;height:22px;border-radius:50%;background:rgba(57,255,20,.1);border:1px solid rgba(57,255,20,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#39FF14;flex-shrink:0;margin-top:1px;transition:all .15s;}
+.opt.chosen .opt-num{background:#39FF14;color:#000;border-color:#39FF14;}
+.opt-txt{font-size:12px;font-weight:700;color:#39FF14;line-height:1.4;flex:1;opacity:.85;}
+.opt.chosen .opt-txt{opacity:1;}
+.opt-emoji{font-size:14px;flex-shrink:0;margin-top:1px;opacity:.7;}
+.opt.chosen .opt-emoji{opacity:1;}
+.transmission{margin-top:10px;padding:9px 12px;background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.2);border-radius:8px;font-size:12px;font-weight:700;color:#39FF14;line-height:1.65;opacity:0;transition:opacity .5s;}
+.transmission::before{content:"📡 TRANSMISSION: ";font-size:10px;opacity:.6;}
+.transmission.show{opacity:1;}
+.q-nav{display:flex;gap:7px;margin-top:10px;}
+.q-nav.ar-nav{flex-direction:row-reverse;}
+.btn-back{flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(57,255,20,.35);background:transparent;color:#39FF14;cursor:pointer;font-weight:900;font-family:inherit;font-size:13px;transition:all .15s;}
+.btn-back:hover{border-color:#39FF14;background:rgba(57,255,20,.08);}
+.btn-next{flex:2;padding:10px;border-radius:10px;border:none;background:#39FF14;color:#000;cursor:pointer;font-weight:900;font-family:inherit;font-size:13px;transition:all .15s;}
+.btn-next:hover{background:#2ee010;}
+.btn-next:disabled{opacity:.3;cursor:not-allowed;}
+.handle-bar{display:flex;justify-content:space-between;align-items:center;padding:0;margin-top:10px;}
+.handle-txt{font-size:10px;color:#39FF14;opacity:.25;line-height:1.4;}
+.mini-soc{display:flex;gap:5px;}
+.msi{width:22px;height:22px;background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.15);border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.msi:hover{background:rgba(57,255,20,.18);}
+.msi svg{width:11px;height:11px;fill:#39FF14;}
+
+/* RESULT */
+.launch-seq{text-align:center;padding:20px 0 12px;}
+.ls-icon{font-size:56px;display:block;margin-bottom:12px;animation:ls-rocket 1s ease-in-out infinite alternate;filter:drop-shadow(0 0 16px rgba(57,255,20,.7));}
+@keyframes ls-rocket{from{transform:translateY(0) scale(1);}to{transform:translateY(-10px) scale(1.04);}}
+.ls-rank-ar{font-size:32px;font-weight:900;color:#39FF14;text-shadow:0 0 24px rgba(57,255,20,.4);margin-bottom:2px;}
+.ls-rank-en{font-size:16px;color:#39FF14;opacity:.5;font-weight:700;margin-bottom:14px;}
+.score-module{background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.2);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+.score-meta{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#39FF14;margin-bottom:6px;opacity:.8;}
+.score-track{height:8px;background:rgba(57,255,20,.1);border-radius:4px;overflow:hidden;}
+.score-fill{height:100%;background:#39FF14;border-radius:4px;transition:width 1.2s ease;box-shadow:0 0 8px rgba(57,255,20,.4);}
+.pct-module{background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.2);border-radius:12px;padding:13px 14px;margin-bottom:10px;text-align:center;}
+.pct-big{font-size:42px;font-weight:900;color:#39FF14;line-height:1;text-shadow:0 0 20px rgba(57,255,20,.4);}
+.pct-label-ar{font-size:13px;font-weight:800;color:#39FF14;margin-top:5px;line-height:1.4;}
+.pct-label-en{font-size:11px;color:#39FF14;opacity:.5;margin-top:2px;}
+.pct-track{height:5px;background:rgba(57,255,20,.1);border-radius:3px;overflow:hidden;margin-top:9px;}
+.pct-fill{height:100%;background:#39FF14;border-radius:3px;transition:width 1.4s ease;}
+.pct-hint{font-size:10px;color:#39FF14;opacity:.35;margin-top:3px;}
+.rank-ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px;}
+.rl{background:rgba(57,255,20,.04);border:1px solid rgba(57,255,20,.12);border-radius:8px;padding:7px 4px;text-align:center;opacity:.25;transition:all .4s;}
+.rl.active{background:rgba(57,255,20,.12);border-color:#39FF14;opacity:1;transform:scale(1.07);box-shadow:0 0 12px rgba(57,255,20,.2);}
+.rl-icon{font-size:14px;display:block;margin-bottom:2px;line-height:1;}
+.rl-ar{font-size:10px;font-weight:800;color:#39FF14;}
+.rl-en{font-size:9px;color:#39FF14;opacity:.5;margin-top:1px;}
+.mission-desc{background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.18);border-radius:10px;padding:11px 13px;font-size:12px;font-weight:600;color:#39FF14;opacity:.85;line-height:1.75;margin-bottom:9px;}
+.mission-quote{font-size:14px;font-weight:900;color:#39FF14;line-height:1.55;padding:0 0 9px;border-bottom:1px solid rgba(57,255,20,.2);margin-bottom:10px;}
+.path-h{font-size:11px;font-weight:900;color:#39FF14;margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em;opacity:.7;}
+.tasks{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.task{background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.14);border-radius:8px;padding:8px 11px;font-size:12px;color:#39FF14;line-height:1.55;display:flex;gap:9px;opacity:.85;}
+.task-w{font-size:10px;font-weight:900;color:#39FF14;min-width:50px;flex-shrink:0;opacity:.55;letter-spacing:.03em;}
+.share-sec{margin-bottom:10px;}
+.share-h{font-size:11px;font-weight:900;color:#39FF14;text-align:center;margin-bottom:7px;opacity:.7;}
+.share-btns{display:flex;gap:6px;}
+.sbtn{flex:1;padding:9px 5px;border-radius:8px;border:none;cursor:pointer;font-weight:800;font-size:11px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:transform .15s;}
+.sbtn:hover{transform:scale(1.03);}
+.sb-wa{background:#25D366;color:#fff;}
+.sb-cp{background:rgba(57,255,20,.1);color:#39FF14;border:1px solid rgba(57,255,20,.3);}
+.sb-tw{background:rgba(57,255,20,.1);color:#39FF14;border:1px solid rgba(57,255,20,.3);}
+.copied{font-size:11px;font-weight:700;color:#39FF14;text-align:center;margin-top:4px;opacity:0;transition:opacity .3s;}
+.copied.show{opacity:1;}
+.retry-btn{width:100%;padding:11px;background:transparent;border:1.5px solid rgba(57,255,20,.4);border-radius:10px;font-size:13px;font-weight:900;color:#39FF14;cursor:pointer;font-family:inherit;margin-bottom:9px;transition:all .15s;}
+.retry-btn:hover{border-color:#39FF14;background:rgba(57,255,20,.06);}
+.share-note{background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.18);border-radius:8px;padding:9px 12px;font-size:11px;font-weight:700;color:#39FF14;text-align:center;line-height:1.6;opacity:.8;}
+.ar{direction:rtl;text-align:right;}.en{direction:ltr;text-align:left;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="sc-home" class="screen active">
+  <div class="starfield" id="sf0"></div>
+  <div class="nring" style="width:480px;height:480px;top:35%;left:50%;--nd:7s;--ndd:0s;"></div>
+  <div class="nring" style="width:300px;height:300px;top:35%;left:50%;--nd:5s;--ndd:1.5s;"></div>
+  <div class="nring" style="width:160px;height:160px;top:35%;left:50%;--nd:4s;--ndd:3s;"></div>
+  <div class="orb" style="width:320px;height:100px;top:30%;left:50%;margin:-50px -160px;--os:13s;"><div class="orb-sat">🛸</div></div>
+  <div class="fly-robot">🤖</div>
+  <div class="content" style="text-align:center;padding-top:36px;">
+    <div style="margin-bottom:10px;"><span class="badge-pill">🚀 MISSION BRIEFING</span></div>
+    <span class="home-rocket">🚀</span>
+    <div class="home-title-ar">هل أنت مستعد لاستكشاف<br>عالم الذكاء الاصطناعي؟</div>
+    <div class="home-title-en">Are you ready to explore the AI world?</div>
+    <div class="lang-grid">
+      <div class="lcard" onclick="boot('ar')"><div class="lcard-flag">🇸🇦</div><div class="lcard-name">عربي</div><div class="lcard-hint">لهجة خليجية</div></div>
+      <div class="lcard" onclick="boot('en')"><div class="lcard-flag">🌐</div><div class="lcard-name">English</div><div class="lcard-hint">International</div></div>
+    </div>
+    <div class="soc-row" id="home-soc"></div>
+    <div class="hhandle">الحارث البليهد · @alharethbelaihd</div>
+  </div>
+</div>
+
+<div id="sc-intro" class="screen">
+  <div class="starfield" id="sf1"></div>
+  <div class="nring" style="width:400px;height:400px;top:25%;left:50%;--nd:6s;--ndd:0s;"></div>
+  <div class="content fade-up" id="intro-body"></div>
+</div>
+
+<div id="sc-q" class="screen">
+  <div class="starfield" id="sf2"></div>
+  <div class="nring" style="width:350px;height:350px;top:20%;left:50%;--nd:7s;--ndd:1s;"></div>
+  <div class="content">
+    <div class="mission-hdr">
+      <div class="mission-tag" id="q-cat-tag">SECTOR 1</div>
+      <div class="mission-num" id="q-num">1 / 8</div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-track"><div class="prog-bar" id="pb" style="width:12.5%"></div></div>
+      <div class="dots" id="dots"></div>
+    </div>
+    <div id="qbody" class="fade-up"></div>
+    <div class="transmission" id="trans"></div>
+    <div class="q-nav" id="qnav">
+      <button class="btn-back" id="bbk" onclick="goBack()"></button>
+      <button class="btn-next" id="bnx" onclick="goNext()" disabled></button>
+    </div>
+    <div class="handle-bar">
+      <div class="mini-soc" id="q-soc"></div>
+      <div class="handle-txt" id="q-hdl"></div>
+    </div>
+  </div>
+</div>
+
+<div id="sc-res" class="screen">
+  <div class="starfield" id="sf3"></div>
+  <div class="nring" style="width:500px;height:500px;top:15%;left:50%;--nd:8s;--ndd:0s;"></div>
+  <div class="nring" style="width:280px;height:280px;top:15%;left:50%;--nd:5s;--ndd:2s;"></div>
+  <div class="content fade-up" id="res-body"></div>
+</div>
+
+</div>
+<script>
+var APPS_SCRIPT_URL="PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+var L='en',role='',ans=new Array(8).fill(0),qi=0;
+
+function genStars(id){var c=document.getElementById(id);if(!c)return;[[1,55],[2,28],[3,10],[4,4]].forEach(function(d){for(var i=0;i<d[1];i++){var el=document.createElement('div');el.className='star '+(d[0]===4?'sh':'tw');var lo=(0.1+Math.random()*0.35).toFixed(2);el.style.cssText='left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+d[0]+'px;height:'+d[0]+'px;--d:'+(1.5+Math.random()*3.5).toFixed(1)+'s;--dl:'+(Math.random()*4).toFixed(1)+'s;--lo:'+lo+';';c.appendChild(el);}});for(var p=0;p<12;p++){var pel=document.createElement('div');pel.className='pt';var ps=1+Math.floor(Math.random()*3);pel.style.cssText='left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*70).toFixed(1)+'%;width:'+ps+'px;height:'+ps+'px;--pd:'+(4+Math.random()*6).toFixed(1)+'s;--pdd:'+(Math.random()*4).toFixed(1)+'s;--px:'+(-15+Math.random()*30).toFixed(0)+'px;--py:'+(-25+Math.random()*15).toFixed(0)+'px;';c.appendChild(pel);}}
+['sf0','sf1','sf2','sf3'].forEach(genStars);
+
+var SOCIAL=[['https://www.linkedin.com/in/alhareth-albelaihed/','<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>'],['https://twitter.com/alharethbelaihd','<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.26 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'],['https://instagram.com/alharethbelaihd','<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>'],['https://tiktok.com/@alharethbelaihd','<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.75a4.85 4.85 0 0 1-1-.06z"/></svg>']];
+function socHTML(cls){return SOCIAL.map(function(s){return'<div class="'+cls+'" onclick="OL(\''+s[0]+'\')">'+s[1]+'</div>';}).join('');}
+document.getElementById('home-soc').innerHTML=socHTML('si');
+
+var TX={ar:{badge:'🚀 مهمة الاستكشاف',icon:'🚀',titleAr:'هل أنت مستعد لاستكشاف عالم الذكاء الاصطناعي؟',titleEn:'Are you ready to explore the AI world?',p:'8 محطات استكشافية تكشف مستوى جاهزيتك للإقلاع في عالم الذكاء الاصطناعي — ثم تحصل على مسار رحلتك حسب مجالك.',rl:'اختر قطاعك 🛸',roles:['📢 التسويق والاتصال','⚙️ العمليات والإدارة','📊 المالية والتحليل','👥 الموارد البشرية'],roleKeys:['التسويق والاتصال','العمليات والإدارة','المالية والتحليل','الموارد البشرية'],sb:'🚀 ابدأ مهمة الاستكشاف',sp:'اختر قطاعك أولاً',ranksLabel:'رتب المستكشفين:',of:'من',back:'→ رجوع',next:'← المحطة التالية',fin:'⚡ اكتشف رتبتك',ys:'رتبتك الاستكشافية:',ysc:'نتيجة البعثة:',yp:'🛸 مسار بعثتك الـ 30 يوم',wk:'المرحلة',retry:'🔄 أعد إطلاق البعثة',sn:'شارك رتبتك في التعليقات 👇\nاكتب رتبتك + قطاعك',shareTitle:'📡 أرسل الإشارة!',waBtn:'واتساب 🛸',cpBtn:'انسخ 🔗',twBtn:'تغريد 📡',copied:'تم الإرسال ✅',pctTopLabel:'أنت في أعلى',pctTopSfx:'من مستكشفي الذكاء الاصطناعي',pctBotLabel:'تجاوزت',pctBotSfx:'من المستكشفين',pctHint:'موقعك في مجرة المستكشفين',missionTag:'SECTOR',handle:'الحارث البليهد\n@alharethbelaihd'},en:{badge:'🚀 MISSION BRIEFING',icon:'🚀',titleAr:'Are you ready to explore the AI world?',titleEn:'هل أنت مستعد لاستكشاف عالم الذكاء الاصطناعي؟',p:'8 exploration checkpoints that reveal your AI readiness for launch — then you get your personalized mission path based on your role.',rl:'Choose your sector 🛸',roles:['📢 Marketing & Comms','⚙️ Operations & Admin','📊 Finance & Analysis','👥 HR & People'],roleKeys:['Marketing & Comms','Operations & Admin','Finance & Analysis','HR & People'],sb:'🚀 Launch the mission',sp:'Choose your sector first',ranksLabel:'Explorer ranks:',of:'of',back:'← Back',next:'Next Sector →',fin:'⚡ Discover my rank',ys:'Your explorer rank:',ysc:'Mission score:',yp:'🛸 Your 30-day mission path',wk:'Phase',retry:'🔄 Relaunch mission',sn:'Share your rank in the comments 👇\nWrite your rank + sector',shareTitle:'📡 Send the signal!',waBtn:'WhatsApp 🛸',cpBtn:'Copy 🔗',twBtn:'Tweet 📡',copied:'Copied ✅',pctTopLabel:'You\'re in the top',pctTopSfx:'of AI explorers',pctBotLabel:'You\'ve surpassed',pctBotSfx:'of explorers',pctHint:'Your position in the AI galaxy',missionTag:'SECTOR',handle:'الحارث البليهد\n@alharethbelaihd'}};
+
+var RANKS={ar:[{n:'المراقب',e:'The Observer',icon:'🔭',min:8,max:13,desc:'أنت تتابع أخبار الذكاء الاصطناعي من مركز الرصد. تلتقط الإشارات، لكن مركبتك الاستكشافية لا تزال على أرض المنصة.',quote:'كل مستكشف كبير بدأ بمراقبة النجوم قبل أن يصل إليها. أنت تعرف الآن وين أنت في الرحلة.',pctTop:3,pctBot:97},{n:'المجرِّب',e:'The Pioneer',icon:'🧭',min:14,max:19,desc:'أطلقت مركبتك لأول مرة وشعرت بانعدام الجاذبية. تستكشف بفضول لكن بدون خريطة ثابتة بعد.',quote:'الفضول هو وقود الرحلة. اللي تحتاجه الآن هو خريطة نجوم تحول التجربة لرحلة منظمة.',pctTop:22,pctBot:78},{n:'المستكشف',e:'The Explorer',icon:'🚀',min:20,max:26,desc:'أنت في رحلة فعلية. تتنقل بين كواكب الذكاء الاصطناعي بثقة وتجمع بيانات حقيقية. المنطقة الذهبية.',quote:'وصلت لما يريده كل مستكشف — الرحلة الحقيقية. التحدي الجاي: ابنِ خرائط للمستكشفين الجدد.',pctTop:9,pctBot:91},{n:'قائد البعثة',e:'Mission Commander',icon:'🏆',min:27,max:32,desc:'أنت لا تستكشف فقط — أنت تخطط بعثات وتقود فرقاً. وصلت لأعلى رتبة في مجرة الذكاء الاصطناعي.',quote:'مسؤوليتك الآن لا تقتصر على استكشاف آفاق جديدة — بل على فتح هذه الآفاق للجيل القادم.',pctTop:2,pctBot:98}],en:[{n:'The Observer',e:'المراقب',icon:'🔭',min:8,max:13,desc:'You\'re monitoring AI from the observation deck. You\'re picking up signals, but your exploration vessel is still on the launch pad.',quote:'Every great explorer started by watching the stars before reaching them. You now know where you are in the journey.',pctTop:3,pctBot:97},{n:'The Pioneer',e:'المجرِّب',icon:'🧭',min:14,max:19,desc:'You\'ve launched for the first time and felt weightlessness. You\'re exploring with curiosity but without a fixed star map yet.',quote:'Curiosity is the fuel of the journey. What you need now is a star map that turns experimentation into organized exploration.',pctTop:22,pctBot:78},{n:'The Explorer',e:'المستكشف',icon:'🚀',min:20,max:26,desc:'You\'re on an actual mission. Navigating AI planets with confidence and collecting real data. The golden zone.',quote:'You\'ve reached what every explorer wants — the real journey. The next challenge: build maps for new explorers.',pctTop:9,pctBot:91},{n:'Mission Commander',e:'قائد البعثة',icon:'🏆',min:27,max:32,desc:'You\'re not just exploring — you\'re planning missions and leading crews. You\'ve reached the highest rank in the AI galaxy.',quote:'Your responsibility now isn\'t just exploring new frontiers — it\'s opening those frontiers for the next generation.',pctTop:2,pctBot:98}]};
+
+var EMOJIS=[['🙈','📎','🔥','🚀'],['😶','👆','🔁','⚡'],['🚫','🤫','😎','📣'],['😤','🕐','👍','🎯'],['🐢','📅','📖','⚡'],['🤐','💭','✌️','📢'],['🤷','❓','〰️','✅'],['💨','🗒️','🧩','📋']];
+
+var QS={ar:[{cat:'محطة الرصد',sticker:'🔭',qAr:'لما تسمع عن أداة ذكاء اصطناعي جديدة تخص شغلك — وش تسوي؟',qEn:'When you hear about a new AI tool for your work — what do you do?',ins:'هذا يكشف مدى جاهزيتك للإقلاع — الفضول هو أول وقود المركبة.',opts:['أتجاهلها، ما يعنيني','أحفظ الرابط بس ما أرجع له','أجربها في نفس الأسبوع','أجربها وأشارك النتيجة مع أحد'],msg:'الفضول هو أول وقود المركبة. اللي يتجاهل — تبقى مركبته على الأرض.'},{cat:'محطة الإطلاق',sticker:'🚀',qAr:'كم مرة استخدمت أداة ذكاء اصطناعي في شغلك الفعلي هذا الأسبوع؟',qEn:'How many times did you use AI in actual work this week?',ins:'مو كم مرة قرأت — كم مرة أطلقت المركبة فعلاً في مهمة حقيقية.',opts:['صفر — ما أطلقت','مرة أو اثنتين','3 إلى 5 مرات','يومياً، أكثر من مرة'],msg:'الإطلاق الأسبوعي هو مقياس المستكشف الحقيقي. النية وحدها لا تحرك المركبة.'},{cat:'قرار الملاح',sticker:'🧭',qAr:'إذا مديرك ما ذكر أدوات الذكاء الاصطناعي — هل تستخدمها من نفسك؟',qEn:'If your manager hasn\'t mentioned AI — do you use it on your own?',ins:'المستكشف الحقيقي لا ينتظر إذن المحطة الأرضية لكي يستكشف.',opts:['لا، أنتظر توجيه رسمي','أستخدم بسر بدون ما أعلن','أستخدم بشكل طبيعي لنفسي','أستخدم وأعرض النتيجة لمديري'],msg:'المستكشف الحقيقي لا ينتظر إذن المحطة الأرضية. الفضاء مفتوح لمن يقرر الإطلاق.'},{cat:'دقة الملاحة',sticker:'⚡',qAr:'لما تستخدم الذكاء الاصطناعي لمهمة شغل — كم مرة يكون الناتج كافياً مباشرة؟',qEn:'When you use AI for work — how often is the output good enough directly?',ins:'جودة المخرجات تقيس قدرة الملاح على توجيه المركبة — مو قوة المحرك.',opts:['نادراً — الناتج دايماً يحتاج إنقاذ','أحياناً — أحتاج تعديل مسار','غالباً — تصحيح بسيط وأكمل','دائماً — أتحكم في المسار بدقة'],msg:'البرومبت هو نظام توجيه المركبة. الجرافة ما تحفر لوحدها — والمركبة ما تطير لوحدها.'},{cat:'ترقية نظام الملاحة',sticker:'🛸',qAr:'آخر مرة تعلمت فيها طريقة جديدة لاستخدام أداة ذكاء اصطناعي؟',qEn:'When did you last learn a new way to use an AI tool?',ins:'المستكشف الجيد يُحدّث خرائطه باستمرار — الكون يتوسع أسرع مما نتخيل.',opts:['ما حدّثت نظام الملاحة أبداً','منذ أكثر من 3 أشهر — خرائط قديمة','خلال الشهر الماضي','هذا الأسبوع — نظام محدّث'],msg:'المجرة تتوسع كل 6 أشهر. من يتوقف عن تحديث خرائطه — يضيع في الفضاء.'},{cat:'بث الإشارة',sticker:'📡',qAr:'هل شاركت زميل أو مديرك نتيجة عملتها بالذكاء الاصطناعي؟',qEn:'Have you shared an AI result with a colleague or manager?',ins:'المستكشف لا يكتنز اكتشافاته — يرسل الإشارة للمحطة الأرضية.',opts:['لا، أحتفظ بالاكتشافات لنفسي','فكرت في الإرسال لكن ما أرسلت','أرسلت الإشارة مرة أو اثنتين','أبث الإشارة بانتظام وأشجع غيري'],msg:'قائد البعثة لا يعرف أكثر — هو يبث الإشارة أكثر. الاكتشاف الذي لا يُشارك — كأنه لم يحدث.'},{cat:'تحديد حدود الفضاء',sticker:'🎯',qAr:'هل تعرف متى لا تستخدم الذكاء الاصطناعي في شغلك؟',qEn:'Do you know when NOT to use AI in your work?',ins:'المستكشف الحكيم يعرف مناطق الخطر في الفضاء — مو بس مناطق الاستكشاف.',opts:['لا، أستخدمه في كل مناطق الفضاء','أحياناً أشعر بالخطر لكن ما أعرف متى','عندي خريطة تقريبية لمناطق الخطر','خريطة واضحة — أعرف المناطق الآمنة وغيرها'],msg:'المستكشف الذي لا يعرف مناطق الخطر — مركبته في خطر. معرفة "لا" تجعل "نعم" أقوى.'},{cat:'خريطة البعثة',sticker:'🗺️',qAr:'هل عندك خطة واضحة لتطوير مهاراتك في الذكاء الاصطناعي خلال 3 أشهر؟',qEn:'Do you have a clear plan to develop your AI skills in the next 3 months?',ins:'كل بعثة ناجحة في التاريخ كان لها خريطة. الاستكشاف العشوائي يضيع في الفضاء اللانهائي.',opts:['لا خريطة — أطير مع الريح الكونية','عندي وجهة لكن ما رسمتها','خريطة غير رسمية في ذاكرة الملاح','خريطة مفصّلة مع إحداثيات واضحة'],msg:'الفضاء لا نهائي — بدون خريطة تضيع. كل محطة في رحلتك تحتاج قرار مقصود.'}],en:[{cat:'OBSERVATION DECK',sticker:'🔭',qAr:'When you hear about a new AI tool for your work — what do you do?',qEn:'لما تسمع عن أداة جديدة — وش تسوي؟',ins:'This reveals your launch readiness — curiosity is the first fuel of the vessel.',opts:['Ignore it — not my mission','Save the coordinates but never return','Try it within the same week','Try it and broadcast the results'],msg:'Curiosity is the first fuel. Those who ignore — their vessel stays on the ground.'},{cat:'LAUNCH SECTOR',sticker:'🚀',qAr:'How many times did you use AI in actual work this week?',qEn:'كم مرة استخدمت الذكاء الاصطناعي في شغلك الفعلي هذا الأسبوع؟',ins:'Not how many times you read about it — how many times you actually launched on a real mission.',opts:['Zero launches this week','Once or twice','3 to 5 missions','Daily — multiple launches a day'],msg:'Weekly launches are the real explorer metric. Intention alone doesn\'t move the vessel.'},{cat:'NAVIGATOR CALL',sticker:'🧭',qAr:'If your manager hasn\'t mentioned AI — do you use it on your own?',qEn:'إذا مديرك ما ذكر الذكاء الاصطناعي — هل تستخدمه من نفسك؟',ins:'A real explorer doesn\'t wait for ground control permission to explore.',opts:['No — I wait for ground control','I explore quietly without broadcasting','I explore normally for my own missions','I explore and report results to command'],msg:'A real explorer doesn\'t wait for ground control. Deep space is open for those who decide to launch.'},{cat:'NAVIGATION ACCURACY',sticker:'⚡',qAr:'When you use AI for work — how often is the output good enough directly?',qEn:'كم مرة يكون ناتج الذكاء الاصطناعي كافياً للاستخدام مباشرة؟',ins:'Output quality measures the navigator\'s ability to guide the vessel — not engine power.',opts:['Rarely — output always needs rescue','Sometimes — course correction needed','Often — minor adjustments only','Always — I control the trajectory precisely'],msg:'The prompt is the navigation system. The vessel doesn\'t fly itself — the navigator does.'},{cat:'SYSTEM UPGRADE',sticker:'🛸',qAr:'When did you last learn a new way to use an AI tool?',qEn:'آخر مرة حدّثت فيها نظام الملاحة لديك؟',ins:'A good explorer continuously updates their star maps — the universe expands faster than we imagine.',opts:['Never upgraded navigation systems','More than 3 months ago — outdated maps','Within the past month','This week — fully updated'],msg:'The galaxy expands every 6 months. Stop updating your maps — and you\'ll get lost in deep space.'},{cat:'SIGNAL BROADCAST',sticker:'📡',qAr:'Have you shared an AI result with a colleague or manager?',qEn:'هل بعثت إشارة لزميل أو مديرك بنتيجة عملتها بالذكاء الاصطناعي؟',ins:'An explorer doesn\'t hoard discoveries — they broadcast the signal to base camp.',opts:['No — I keep discoveries to myself','Thought about broadcasting but didn\'t','Sent the signal once or twice','I broadcast regularly and inspire others'],msg:'Mission Commander doesn\'t know more — they broadcast more. A discovery not shared — never happened.'},{cat:'DANGER ZONES',sticker:'🎯',qAr:'Do you know when NOT to use AI in your work?',qEn:'هل تعرف مناطق الخطر في الفضاء — متى لا تستخدم الذكاء الاصطناعي؟',ins:'A wise explorer knows danger zones in space — not just exploration zones.',opts:['No — I fly through all zones','Sometimes sense danger but don\'t know when','I have a rough danger zone map','Clear map — I know safe and danger zones'],msg:'An explorer who doesn\'t know danger zones puts the vessel at risk. Knowing "no" makes "yes" stronger.'},{cat:'MISSION MAP',sticker:'🗺️',qAr:'Do you have a clear plan to develop your AI skills in the next 3 months?',qEn:'هل عندك خريطة بعثة واضحة لتطوير مهاراتك خلال 3 أشهر؟',ins:'Every successful mission in history had a map. Random exploration gets lost in infinite space.',opts:['No map — flying with cosmic winds','I have a destination but no drawn map','Informal map in the navigator\'s memory','Detailed map with clear coordinates'],msg:'Space is infinite — without a map you\'ll drift. Every checkpoint in your journey needs an intentional decision.'}]};
+
+var PA={ar:{0:{'التسويق والاتصال':[{w:1,t:'🔭 جرّب ChatGPT أو Claude لكتابة أول بريف تسويقي — أول إطلاق للمركبة.'},{w:2,t:'🛸 اطلب 10 أفكار لحملة قادمة. اختر أفضل ثلاثة ووسّعها.'},{w:3,t:'⚡ اكتب وصف منتج بمساعدة AI وقارن النتيجة بما كنت ستكتبه.'},{w:4,t:'📡 أرسل تجربتك لزميل واحد — أول بث لإشارة الاستكشاف.'}],'العمليات والإدارة':[{w:1,t:'🔭 استخدم AI لتلخيص أول اجتماع أو بريد طويل.'},{w:2,t:'🛸 اطلب مساعدة في تنظيم أجندة أسبوعية.'},{w:3,t:'⚡ حوّل ملاحظاتك الخام لتقرير منظم.'},{w:4,t:'📡 وثّق الوقت اللي وفّرته برقم — أول بيانات رحلتك.'}],'المالية والتحليل':[{w:1,t:'🔭 استخدم AI لشرح مصطلح مالي معقد.'},{w:2,t:'🛸 اطلب مساعدة في هيكلة تقرير مالي.'},{w:3,t:'⚡ جرّب تحليل بيانات بسيطة بمساعدة AI.'},{w:4,t:'📡 أرسل ما تعلمته لزميل — وسّع دائرة الاستكشاف.'}],'الموارد البشرية':[{w:1,t:'🔭 استخدم AI لكتابة أول وصف وظيفي من الصفر.'},{w:2,t:'🛸 اطلب 10 أسئلة مقابلة لوظيفة معينة.'},{w:3,t:'⚡ جرّب تحسين سياسة HR بمساعدة AI.'},{w:4,t:'📡 شارك النتيجة مع فريقك — أول بث من المحطة.'}]},1:{'التسويق والاتصال':[{w:1,t:'🚀 اكتب كل البريفات هذا الأسبوع باستخدام AI — مهمة كاملة.'},{w:2,t:'🛸 توليد 10 أفكار محتوى وتطوير أفضل ثلاثة.'},{w:3,t:'⚡ تحليل حملة سابقة — 5 نقاط تحسين واضحة.'},{w:4,t:'📡 أرسل مخرجاً بـ AI لمديرك — أول بث رسمي.'}],'العمليات والإدارة':[{w:1,t:'🚀 كل التقارير هذا الأسبوع — AI يكتب المسودة الأولى.'},{w:2,t:'🛸 ابنِ قالب تلقائي لأكثر مهمة متكررة.'},{w:3,t:'⚡ استخدم AI لتحديد الهدر في عملية.'},{w:4,t:'📡 أرسل وقت التوفير لمديرك مع رقم حقيقي.'}],'المالية والتحليل':[{w:1,t:'🚀 كل التعليقات التحليلية هذا الأسبوع — AI يكتبها.'},{w:2,t:'🛸 تحليل مجموعة بيانات وطلب insights.'},{w:3,t:'⚡ قارن توقعاتك مع توقعات AI.'},{w:4,t:'📡 شارك الفرق مع فريقك كدرس استكشافي.'}],'الموارد البشرية':[{w:1,t:'🚀 كل مراسلات HR هذا الأسبوع — AI يكتبها.'},{w:2,t:'🛸 اطلب برنامج onboarding محسّن.'},{w:3,t:'⚡ تحليل نتائج استبيان بمساعدة AI.'},{w:4,t:'📡 قُد workshop بسيط — أول بعثة تعليمية.'}]},2:{'التسويق والاتصال':[{w:1,t:'🚀 ابنِ نظام محتوى كامل من الفكرة للإطلاق.'},{w:2,t:'🛸 علّم ملاح واحد — نقل خريطة الاستكشاف.'},{w:3,t:'⚡ اقترح اعتماد أداة AI رسمياً في المحطة.'},{w:4,t:'📡 وثّق نظامك كـ playbook — خريطة للجميع.'}],'العمليات والإدارة':[{w:1,t:'🚀 ابنِ نظام أتمتة كامل لعملية متكررة.'},{w:2,t:'🛸 علّم طاقم المركبة كيف تستخدم AI في التقارير.'},{w:3,t:'⚡ قدّم مقترح رسمي لتبني أداة AI.'},{w:4,t:'📡 قِس الأثر وأرسل الأرقام للقيادة.'}],'المالية والتحليل':[{w:1,t:'🚀 ابنِ نموذج تحليلي يستخدم AI بانتظام.'},{w:2,t:'🛸 علّم الطاقم prompt engineering للبيانات.'},{w:3,t:'⚡ تقرير عن كيف AI يحسّن دقة التوقعات.'},{w:4,t:'📡 وثّق أفضل ممارساتك — خريطة المستكشف.'}],'الموارد البشرية':[{w:1,t:'🚀 ابنِ استراتيجية AI للموارد البشرية.'},{w:2,t:'🛸 قُد workshop تعليمي — أنت قائد البعثة.'},{w:3,t:'⚡ طوّر سياسة رسمية لاستخدام AI.'},{w:4,t:'📡 ارفع التوصية للقيادة مع بيانات الأثر.'}]},3:{'التسويق والاتصال':[{w:1,t:'🏆 أسّس مجموعة مستكشفين AI داخلية.'},{w:2,t:'🛸 ابتكر إطار عمل لتبني AI في مؤسستك.'},{w:3,t:'⚡ قدّم تجربتك في منتدى — بث للمجرة.'},{w:4,t:'📡 وثّق منهجيتك كـ IP رسمي يحمل اسمك.'}],'العمليات والإدارة':[{w:1,t:'🏆 صمّم خريطة طريق AI على مستوى المنظمة.'},{w:2,t:'🛸 قُد فريق التحول — أنت قائد البعثة الكبرى.'},{w:3,t:'⚡ شارك في مؤتمر أو اكتب عن رحلتك.'},{w:4,t:'📡 ضع نفسك مستشاراً رسمياً في AI.'}],'المالية والتحليل':[{w:1,t:'🏆 قُد مبادرة AI للتحليل على مستوى الشركة.'},{w:2,t:'🛸 طوّر معايير استخدام AI في التقارير المالية.'},{w:3,t:'⚡ شارك في منتدى مالي — بث الاكتشاف.'},{w:4,t:'📡 كن المرجع الداخلي لـ AI في المالية.'}],'الموارد البشرية':[{w:1,t:'🏆 قُد استراتيجية AI للموارد البشرية.'},{w:2,t:'🛸 صمّم برنامج تدريب AI — رحلة للجميع.'},{w:3,t:'⚡ اكتب سياسة مؤسسية شاملة لاستخدام AI.'},{w:4,t:'📡 شارك تجربتك خارجياً — بث للمجرة.'}]}},en:{0:{'Marketing & Comms':[{w:1,t:'🔭 Try ChatGPT or Claude to write your first brief — first launch.'},{w:2,t:'🛸 Request 10 ideas for a campaign. Develop the best three.'},{w:3,t:'⚡ Write a product description with AI and compare.'},{w:4,t:'📡 Broadcast the experience to one colleague — first signal.'}],'Operations & Admin':[{w:1,t:'🔭 Use AI to summarize a meeting or long email.'},{w:2,t:'🛸 Ask it to organize a weekly agenda.'},{w:3,t:'⚡ Convert raw notes into a structured report.'},{w:4,t:'📡 Log time saved with a number — first mission data.'}],'Finance & Analysis':[{w:1,t:'🔭 Use AI to explain a complex financial term.'},{w:2,t:'🛸 Ask it to help structure a financial report.'},{w:3,t:'⚡ Try analyzing simple data with AI.'},{w:4,t:'📡 Share what you learned — expand the exploration circle.'}],'HR & People':[{w:1,t:'🔭 Use AI to write a job description from scratch.'},{w:2,t:'🛸 Request 10 interview questions for a role.'},{w:3,t:'⚡ Improve an existing HR policy with AI.'},{w:4,t:'📡 Share the result with your team — first station broadcast.'}]},1:{'Marketing & Comms':[{w:1,t:'🚀 Write all briefs this week using AI — full mission.'},{w:2,t:'🛸 Generate 10 content ideas and develop the best three.'},{w:3,t:'⚡ Analyze a past campaign — 5 clear improvements.'},{w:4,t:'📡 Share an AI output with your manager — first official broadcast.'}],'Operations & Admin':[{w:1,t:'🚀 All reports this week — AI writes the first draft.'},{w:2,t:'🛸 Build an automated template for your most repetitive task.'},{w:3,t:'⚡ Use AI to identify waste in a process.'},{w:4,t:'📡 Send the time savings to your manager with a real number.'}],'Finance & Analysis':[{w:1,t:'🚀 All analytical commentary this week — AI writes it.'},{w:2,t:'🛸 Analyze a dataset and request insights.'},{w:3,t:'⚡ Compare your forecasts with AI forecasts.'},{w:4,t:'📡 Share the difference with your team as an exploration lesson.'}],'HR & People':[{w:1,t:'🚀 All HR correspondence this week — AI writes it.'},{w:2,t:'🛸 Request an improved onboarding program.'},{w:3,t:'⚡ Analyze survey results with AI.'},{w:4,t:'📡 Lead a simple workshop — first teaching mission.'}]},2:{'Marketing & Comms':[{w:1,t:'🚀 Build a complete content system from idea to launch.'},{w:2,t:'🛸 Teach one navigator — transfer the exploration map.'},{w:3,t:'⚡ Formally propose a specific AI tool for the station.'},{w:4,t:'📡 Document your system as a playbook — a map for all.'}],'Operations & Admin':[{w:1,t:'🚀 Build a complete automation system for a repetitive process.'},{w:2,t:'🛸 Train the crew on AI for reporting.'},{w:3,t:'⚡ Submit a formal proposal for AI adoption.'},{w:4,t:'📡 Measure impact and broadcast numbers to leadership.'}],'Finance & Analysis':[{w:1,t:'🚀 Build an analytical model using AI regularly.'},{w:2,t:'🛸 Teach the crew prompt engineering for data.'},{w:3,t:'⚡ Report on how AI improves forecast accuracy.'},{w:4,t:'📡 Document best practices — the explorer\'s map.'}],'HR & People':[{w:1,t:'🚀 Build an AI strategy for HR.'},{w:2,t:'🛸 Lead a learning workshop — you\'re mission commander.'},{w:3,t:'⚡ Develop a formal policy for AI use.'},{w:4,t:'📡 Escalate recommendations with impact data.'}]},3:{'Marketing & Comms':[{w:1,t:'🏆 Establish an internal AI explorers group.'},{w:2,t:'🛸 Create a framework for AI adoption in your organization.'},{w:3,t:'⚡ Present at a forum — broadcast to the galaxy.'},{w:4,t:'📡 Document your methodology as formal IP bearing your name.'}],'Operations & Admin':[{w:1,t:'🏆 Design an AI roadmap at organizational level.'},{w:2,t:'🛸 Lead the transformation team — grand mission commander.'},{w:3,t:'⚡ Speak at a conference or write about your journey.'},{w:4,t:'📡 Position yourself as a formal AI advisor.'}],'Finance & Analysis':[{w:1,t:'🏆 Lead an AI analytics initiative company-wide.'},{w:2,t:'🛸 Develop standards for AI in financial reporting.'},{w:3,t:'⚡ Speak at a financial forum — broadcast the discovery.'},{w:4,t:'📡 Become the internal AI reference for finance.'}],'HR & People':[{w:1,t:'🏆 Lead the AI strategy for HR.'},{w:2,t:'🛸 Design an AI training program — a journey for all.'},{w:3,t:'⚡ Write a comprehensive organizational AI policy.'},{w:4,t:'📡 Share externally — broadcast to the galaxy.'}]}}};
+
+function submitResult(data){if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==="PASTE_YOUR_APPS_SCRIPT_URL_HERE")return;try{fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)}).catch(function(){});}catch(e){}}
+
+function boot(l){L=l;ans=new Array(8).fill(0);qi=0;role='';var t=TX[l],isAr=l==='ar';var ranks=RANKS[l];var rRow='<div class="ranks-row">';ranks.forEach(function(r){rRow+='<div class="rank-card"><span class="rank-icon">'+r.icon+'</span><div class="rank-ar">'+r.n+'</div><div class="rank-en">'+r.e+'</div></div>';});rRow+='</div>';var rGrid='<div class="role-grid">';t.roles.forEach(function(r,i){rGrid+='<div class="rbtn '+(isAr?'ar':'')+'" onclick="pickRole(\''+t.roleKeys[i]+'\',this)">'+r+'</div>';});rGrid+='</div>';document.getElementById('intro-body').innerHTML='<div class="'+(isAr?'ar':'en')+'">'+'<span class="mission-icon">'+t.icon+'</span><span class="mission-badge">'+t.badge+'</span><div class="mission-title-ar">'+t.titleAr+'</div><div class="mission-title-en">'+t.titleEn+'</div><div class="mission-p">'+t.p+'</div><div style="font-size:11px;font-weight:800;color:#39FF14;opacity:.55;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">'+t.ranksLabel+'</div>'+rRow+'<div class="role-lbl">'+t.rl+'</div>'+rGrid+'<button class="launch-btn" id="sbtn" onclick="startMission()" disabled>'+t.sp+'</button></div><div class="handle-bar" style="margin-top:12px;"><div class="mini-soc">'+socHTML('msi')+'</div><div class="handle-txt">'+t.handle.replace('\n','<br>')+'</div></div>';show('sc-intro');}
+
+function pickRole(r,el){role=r;document.querySelectorAll('.rbtn').forEach(function(b){b.classList.remove('picked');});el.classList.add('picked');var sb=document.getElementById('sbtn');sb.disabled=false;sb.textContent=TX[L].sb;}
+function startMission(){if(!role)return;ans=new Array(8).fill(0);qi=0;buildDots();show('sc-q');renderQ();}
+function buildDots(){var d=document.getElementById('dots');d.innerHTML='';for(var i=0;i<8;i++){var el=document.createElement('div');el.className='dot'+(i===0?' now':'');el.id='d'+i;d.appendChild(el);}}
+function updDots(c){for(var i=0;i<8;i++){var d=document.getElementById('d'+i);d.className='dot'+(i<c?' done':i===c?' now':'');}}
+function renderQ(){var t=TX[L],q=QS[L][qi],isAr=L==='ar',pct=Math.round(((qi+1)/8)*100);document.getElementById('q-cat-tag').textContent=t.missionTag+' '+(qi+1);document.getElementById('q-num').textContent=(qi+1)+' / 8';document.getElementById('pb').style.width=pct+'%';updDots(qi);var nav=document.getElementById('qnav');nav.className='q-nav'+(isAr?' ar-nav':'');var bbk=document.getElementById('bbk'),bnx=document.getElementById('bnx');bbk.textContent=t.back;bbk.style.display=qi===0?'none':'';bnx.textContent=qi===7?t.fin:t.next;bnx.disabled=ans[qi]===0;document.getElementById('q-soc').innerHTML=socHTML('msi');document.getElementById('q-hdl').innerHTML=t.handle.replace('\n','<br>');var em=EMOJIS[qi]||['1️⃣','2️⃣','3️⃣','4️⃣'];var opts='<div class="opts">';q.opts.forEach(function(o,i){var sel=ans[qi]===(i+1)?'chosen':'';opts+='<div class="opt '+sel+'" onclick="pick('+(i+1)+',this)"><div class="opt-num">'+(i+1)+'</div><div class="opt-txt">'+o+'</div><div class="opt-emoji">'+em[i]+'</div></div>';});opts+='</div>';document.getElementById('qbody').innerHTML='<div class="'+(isAr?'ar':'en')+'"><div class="q-cat">'+q.cat+'</div><span class="q-sticker">'+q.sticker+'</span><div class="q-title-ar">'+q.qAr+'</div><div class="q-title-en">'+q.qEn+'</div><div class="q-ins">'+q.ins+'</div>'+opts+'</div>';var tr=document.getElementById('trans');tr.className='transmission';tr.textContent='';tr.classList.remove('show');if(ans[qi]>0){setTimeout(function(){tr.textContent=q.msg;tr.classList.add('show');},100);}}
+function pick(v,el){ans[qi]=v;document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('chosen');});el.classList.add('chosen');document.getElementById('bnx').disabled=false;var tr=document.getElementById('trans');tr.className='transmission';tr.textContent=QS[L][qi].msg;setTimeout(function(){tr.classList.add('show');},50);}
+function goNext(){if(ans[qi]===0)return;if(qi===7){showResult();return;}qi++;document.getElementById('trans').classList.remove('show');var qb=document.getElementById('qbody');qb.classList.remove('fade-up');void qb.offsetWidth;qb.classList.add('fade-up');renderQ();}
+function goBack(){if(qi===0)return;qi--;document.getElementById('trans').classList.remove('show');renderQ();}
+function showResult(){var total=ans.reduce(function(a,b){return a+b;},0),si=total<=13?0:total<=19?1:total<=26?2:3,rank=RANKS[L][si],isAr=L==='ar',t=TX[L],sPct=Math.round((total/32)*100),barPct=100-rank.pctTop;var rLadder='<div class="rank-ladder">';RANKS[L].forEach(function(r,i){rLadder+='<div class="rl'+(i===si?' active':'')+'"><span class="rl-icon">'+r.icon+'</span><div class="rl-ar">'+r.n+'</div><div class="rl-en">'+r.e+'</div></div>';});rLadder+='</div>';var pdata=PA[L][si]&&PA[L][si][role]?PA[L][si][role]:[],tasks='<div class="path-h">'+t.yp+'</div><div class="tasks">';pdata.forEach(function(tk){tasks+='<div class="task"><span class="task-w">'+t.wk+' '+tk.w+'</span>'+tk.t+'</div>';});tasks+='</div>';var shareText=isAr?'وصلت لرتبة «'+rank.n+'» في مهمة استكشاف الذكاء الاصطناعي 🚀\n\nأنا في أعلى '+rank.pctTop+'% من المستكشفين — وين أنت؟\n\nاختبر رتبتك الآن 👇\nalharethbelaihd.com/ai-explorer':'I just earned the rank of "'+rank.n+'" on the AI Explorer Mission 🚀\n\nTop '+rank.pctTop+'% of AI explorers — where do YOU rank?\n\nTest your AI rank now 👇\nalharethbelaihd.com/ai-explorer';var html='<div class="'+(isAr?'ar':'en')+'">';html+='<div class="launch-seq"><span class="ls-icon">'+rank.icon+'</span><div class="ls-rank-ar">'+rank.n+'</div><div class="ls-rank-en">'+rank.e+'</div></div>';html+='<div class="score-module"><div class="score-meta"><span>'+t.ysc+' '+total+' / 32</span><span>'+sPct+'%</span></div><div class="score-track"><div class="score-fill" id="sf-fill" style="width:0%"></div></div></div>';html+='<div class="pct-module"><div class="pct-big">'+rank.pctTop+'%</div><div class="pct-label-ar">'+t.pctTopLabel+' '+rank.pctTop+'% '+t.pctTopSfx+'</div><div class="pct-label-en">'+t.pctBotLabel+' '+rank.pctBot+'% '+t.pctBotSfx+'</div><div class="pct-track"><div class="pct-fill" id="pct-fill" style="width:0%"></div></div><div class="pct-hint">'+t.pctHint+'</div></div>';html+=rLadder;html+='<div class="mission-desc">'+rank.desc+'</div><div class="mission-quote">'+rank.quote+'</div>'+tasks;html+='<div class="share-sec"><div class="share-h">'+t.shareTitle+'</div><div class="share-btns"><button class="sbtn sb-wa" onclick="OL(\'https://wa.me/?text='+encodeURIComponent(shareText)+'\')">'+t.waBtn+'</button><button class="sbtn sb-cp" onclick="cpLink()">'+t.cpBtn+'</button><button class="sbtn sb-tw" onclick="OL(\'https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText)+'\')">'+t.twBtn+'</button></div><div class="copied" id="cpmsg">'+t.copied+'</div></div>';html+='<button class="retry-btn" onclick="retake()">'+t.retry+'</button><div class="share-note">'+t.sn+'</div></div>';html+='<div class="handle-bar" style="margin-top:10px;"><div class="mini-soc">'+socHTML('msi')+'</div><div class="handle-txt">'+t.handle.replace('\n','<br>')+'</div></div>';document.getElementById('res-body').innerHTML=html;show('sc-res');submitResult({language:L,role:role,rank_ar:rank.n,rank_en:rank.e,score:total,score_pct:sPct,pct_top:rank.pctTop,q1:ans[0],q2:ans[1],q3:ans[2],q4:ans[3],q5:ans[4],q6:ans[5],q7:ans[6],q8:ans[7]});setTimeout(function(){var sf=document.getElementById('sf-fill'),pf=document.getElementById('pct-fill');if(sf){sf.style.transition='width 1.2s ease';sf.style.width=sPct+'%';}if(pf){pf.style.transition='width 1.4s ease';pf.style.width=barPct+'%';}},350);}
+function cpLink(){var url=window.location.href||'https://alharethbelaihd.com';if(navigator.clipboard)navigator.clipboard.writeText(url).then(showCopied);else{var e=document.createElement('textarea');e.value=url;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);showCopied();}}
+function showCopied(){var el=document.getElementById('cpmsg');if(el){el.classList.add('show');setTimeout(function(){el.classList.remove('show');},2000);}}
+function retake(){ans=new Array(8).fill(0);qi=0;role='';L='en';show('sc-home');}
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function OL(url){window.open(url,'_blank');}
+</script>
+</body>
+</html>

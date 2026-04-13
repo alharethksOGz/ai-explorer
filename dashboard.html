@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control — AI Explorer Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,Arial,sans-serif;background:#000;color:#39FF14;min-height:100vh;}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,2s) ease-in-out infinite var(--dl,0s);}
+@keyframes tw{0%,100%{opacity:var(--lo,.15);}50%{opacity:.7;}}
+#login{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;}
+.login-box{background:rgba(57,255,20,.05);border:1px solid rgba(57,255,20,.3);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center;}
+.login-icon{font-size:48px;margin-bottom:16px;display:block;filter:drop-shadow(0 0 16px rgba(57,255,20,.6));}
+.login-title{font-size:22px;font-weight:900;color:#39FF14;margin-bottom:4px;}
+.login-sub{font-size:12px;color:#39FF14;opacity:.45;margin-bottom:24px;}
+.login-input{width:100%;padding:12px 16px;background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.3);border-radius:10px;color:#39FF14;font-size:15px;font-family:inherit;outline:none;text-align:center;letter-spacing:.1em;margin-bottom:12px;}
+.login-input::placeholder{color:rgba(57,255,20,.3);}
+.login-input:focus{border-color:#39FF14;}
+.login-btn{width:100%;padding:13px;background:#39FF14;color:#000;border:none;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;}
+.login-btn:hover{background:#2ee010;}
+.login-err{font-size:12px;color:#ff4444;margin-top:8px;opacity:0;transition:opacity .3s;}
+.login-err.show{opacity:1;}
+#dashboard{display:none;position:relative;z-index:10;padding:0 0 3rem;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(57,255,20,.12);margin-bottom:1.25rem;flex-wrap:wrap;gap:10px;position:sticky;top:0;background:#000;z-index:5;}
+.dash-title{font-size:17px;font-weight:900;color:#39FF14;}
+.dash-sub{font-size:11px;color:#39FF14;opacity:.35;margin-top:2px;}
+.top-right{display:flex;align-items:center;gap:7px;}
+.lang-toggle{display:flex;background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.18);border-radius:7px;overflow:hidden;}
+.lt-btn{padding:6px 13px;font-size:12px;font-weight:800;color:#39FF14;background:transparent;border:none;cursor:pointer;font-family:inherit;transition:all .15s;opacity:.45;}
+.lt-btn.active{background:#39FF14;color:#000;opacity:1;}
+.lt-btn:hover:not(.active){opacity:.75;}
+.action-btn{padding:6px 12px;background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.18);border-radius:7px;color:#39FF14;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.action-btn:hover{background:rgba(57,255,20,.18);}
+.logout-btn{opacity:.4;border-color:rgba(57,255,20,.1);}
+.logout-btn:hover{opacity:1;}
+.dash-content{padding:0 20px;}
+.ar-mode{direction:rtl;}
+.en-mode{direction:ltr;}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px;margin-bottom:1.1rem;}
+.metric{background:rgba(57,255,20,.05);border:1px solid rgba(57,255,20,.15);border-radius:9px;padding:11px;text-align:center;}
+.metric-val{font-size:26px;font-weight:900;color:#39FF14;line-height:1;}
+.metric-lbl{font-size:10px;color:#39FF14;opacity:.4;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+.section{background:rgba(57,255,20,.03);border:1px solid rgba(57,255,20,.1);border-radius:9px;padding:.85rem 1rem;margin-bottom:9px;}
+.section-title{font-size:10px;font-weight:800;color:#39FF14;opacity:.55;text-transform:uppercase;letter-spacing:.06em;margin-bottom:11px;display:flex;align-items:center;gap:6px;}
+.bar-list{display:flex;flex-direction:column;gap:6px;}
+.bar-item{display:flex;align-items:center;gap:8px;}
+.bar-label{font-size:12px;font-weight:700;color:#39FF14;min-width:155px;opacity:.8;flex-shrink:0;}
+.ar-mode .bar-label{text-align:right;}
+.bar-track{flex:1;height:20px;background:rgba(57,255,20,.07);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width 1s ease;min-width:2px;}
+.r0{background:rgba(57,255,20,.3);} .r1{background:rgba(57,255,20,.5);} .r2{background:#39FF14;} .r3{background:#fff;}
+.bar-val{font-size:11px;font-weight:800;color:#39FF14;min-width:58px;opacity:.65;flex-shrink:0;}
+.en-mode .bar-val{text-align:right;} .ar-mode .bar-val{text-align:left;}
+.daily-chart{display:flex;align-items:flex-end;gap:3px;height:68px;padding-bottom:4px;}
+.day-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.day-bar{width:100%;background:#39FF14;border-radius:2px 2px 0 0;min-height:2px;transition:height 1s ease;}
+.day-lbl{font-size:8px;color:#39FF14;opacity:.28;white-space:nowrap;}
+.lang-split{display:flex;gap:7px;}
+.lang-half{flex:1;text-align:center;padding:10px;background:rgba(57,255,20,.04);border-radius:7px;border:1px solid rgba(57,255,20,.1);}
+.lang-pct{font-size:26px;font-weight:900;color:#39FF14;}
+.lang-name{font-size:10px;color:#39FF14;opacity:.4;margin-top:2px;}
+.q-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;}
+.q-card{background:rgba(57,255,20,.04);border:1px solid rgba(57,255,20,.1);border-radius:7px;padding:8px 10px;}
+.q-name{font-size:10px;font-weight:700;color:#39FF14;opacity:.4;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.q-track{height:5px;background:rgba(57,255,20,.1);border-radius:3px;overflow:hidden;}
+.q-fill{height:100%;background:#39FF14;border-radius:3px;transition:width 1s ease;}
+.q-val{font-size:13px;font-weight:900;color:#39FF14;margin-top:4px;}
+.q-weak .q-val{color:#ff6b6b;} .q-weak{border-color:rgba(255,100,100,.25);}
+.q-strong{border-color:rgba(57,255,20,.3);}
+.q-note{font-size:10px;color:#39FF14;opacity:.3;margin-top:7px;}
+.insight{background:rgba(57,255,20,.04);border:1px solid rgba(57,255,20,.2);border-radius:9px;padding:11px 13px;}
+.insight-title{font-size:10px;font-weight:800;color:#39FF14;opacity:.45;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
+.insight-text{font-size:13px;color:#39FF14;line-height:1.8;opacity:.85;}
+.no-data{text-align:center;padding:1.5rem;font-size:13px;color:#39FF14;opacity:.3;}
+.loading-msg{text-align:center;padding:2.5rem;font-size:13px;color:#39FF14;opacity:.4;}
+.pulse{animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.2;}50%{opacity:.75;}}
+.demo-note{background:rgba(255,180,0,.07);border:1px solid rgba(255,180,0,.22);border-radius:7px;padding:7px 11px;font-size:11px;color:#ffd700;margin-bottom:9px;}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<div id="login">
+  <div class="login-box">
+    <span class="login-icon">🛸</span>
+    <div class="login-title">Mission Control</div>
+    <div class="login-sub">AI Explorer Dashboard · Private Access</div>
+    <input type="password" class="login-input" id="pwd" placeholder="Enter access code">
+    <button class="login-btn" onclick="tryLogin()">🚀 Access Dashboard</button>
+    <div class="login-err" id="lerr">Incorrect access code</div>
+    <div style="font-size:10px;color:#39FF14;opacity:.18;margin-top:14px;">الحارث البليهد · OGz Studios</div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="top-bar">
+    <div>
+      <div class="dash-title" id="dtitle">🛸 Mission Control</div>
+      <div class="dash-sub" id="dsub">AI Explorer Mission — Anonymous Results</div>
+    </div>
+    <div class="top-right">
+      <div class="lang-toggle">
+        <button class="lt-btn" id="lt-en" onclick="setLang('en')">EN</button>
+        <button class="lt-btn active" id="lt-ar" onclick="setLang('ar')">ع</button>
+      </div>
+      <button class="action-btn" id="rbtn" onclick="loadData()">🔄 Refresh</button>
+      <button class="action-btn logout-btn" onclick="logout()" id="lbtn">Exit</button>
+    </div>
+  </div>
+  <div class="dash-content" id="dcontent">
+    <div class="loading-msg"><span class="pulse">Loading...</span></div>
+  </div>
+</div>
+
+<script>
+var APPS_SCRIPT_URL="PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+var ACCESS_CODE="ogz2025";
+var DL='ar';
+var _data=null, _demo=false;
+
+var TX={
+  ar:{title:'🛸 مركز التحكم',sub:'مهمة استكشاف الذكاء الاصطناعي — النتائج',refresh:'🔄 تحديث',logout:'خروج',
+    loading:'📡 استقبال بيانات البعثة...',noData:'لا توجد إرسالات بعد',
+    demoNote:'⚠️ بيانات تجريبية — الصق رابط Apps Script لرؤية النتائج الحقيقية',
+    total:'إجمالي المستكشفين',avg:'متوسط النتيجة',avgp:'متوسط النسبة',
+    arexp:'مستكشفون عرب',enexp:'مستكشفون إنجليز',toprank:'الرتبة الأشهر',
+    daily:'الإرسالات اليومية — 14 يوم',rankDist:'توزيع رتب المستكشفين',
+    roleDist:'توزيع القطاعات',langSplit:'انقسام اللغة',
+    qperf:'متوسط نتيجة كل محطة (مقياس 1–4)',
+    qnote:'🔴 أضعف محطة = أكبر فجوة في السوق. 🟢 أقوى محطة = الأكثر استكشافاً.',
+    insTitle:'📣 جاهز للإعلان — انسخ هذا',
+    arLbl:'🇸🇦 عربي',enLbl:'🌐 إنجليزي',
+    rankMap:{'The Observer':'المراقب','The Pioneer':'المجرِّب','The Explorer':'المستكشف','Mission Commander':'قائد البعثة'},
+    roleMap:{'Marketing & Comms':'التسويق والاتصال','Operations & Admin':'العمليات والإدارة','Finance & Analysis':'المالية والتحليل','HR & People':'الموارد البشرية'},
+    qnames:['محطة الرصد','محطة الإطلاق','قرار الملاح','دقة الملاحة','ترقية النظام','بث الإشارة','مناطق الخطر','خريطة البعثة'],
+    insBody:function(d){var t=DT('ar');return 'اختبرت <strong>'+d.total+'</strong> محترف سعودي على جاهزيتهم للذكاء الاصطناعي.<br>'+d.topRankPct+'% حصلوا على رتبة «'+t.rankMap[d.topRankEN]||d.topRankEN+'».<br>أضعف محطة: <strong>'+d.weakQ+'</strong>.<br>متوسط النتيجة: <strong>'+d.avgScore+'/32</strong>.<br>'+d.arPct+'% عربي — '+d.enPct+'% إنجليزي.';}},
+  en:{title:'🛸 Mission Control',sub:'AI Explorer Mission — Anonymous Results',refresh:'🔄 Refresh',logout:'Exit',
+    loading:'📡 Fetching mission data...',noData:'No submissions yet',
+    demoNote:'⚠️ Demo data — paste your Apps Script URL in dashboard.html to see real results',
+    total:'Total Explorers',avg:'Avg Mission Score',avgp:'Avg Score %',
+    arexp:'Arabic Explorers',enexp:'English Explorers',toprank:'Most Common Rank',
+    daily:'Daily Submissions — 14 days',rankDist:'Explorer Rank Distribution',
+    roleDist:'Sector Distribution',langSplit:'Language Split',
+    qperf:'Avg Score per Sector (1–4 scale)',
+    qnote:'🔴 Weakest = biggest market gap. 🟢 Strongest = most explored area.',
+    insTitle:'📣 Announcement Ready — Copy This',
+    arLbl:'🇸🇦 Arabic',enLbl:'🌐 English',
+    rankMap:{},roleMap:{},
+    qnames:['Observation Deck','Launch Sector','Navigator Call','Navigation Accuracy','System Upgrade','Signal Broadcast','Danger Zones','Mission Map'],
+    insBody:function(d){return 'I tested <strong>'+d.total+'</strong> Saudi professionals on AI readiness.<br>'+d.topRankPct+'% landed at the "'+d.topRankEN+'" rank.<br>Weakest area: <strong>'+d.weakQ+'</strong>.<br>Average score: <strong>'+d.avgScore+'/32</strong>.<br>'+d.arPct+'% Arabic — '+d.enPct+'% English.';}}
+};
+
+function DT(l){return TX[l||DL];}
+
+function setLang(l){
+  DL=l;
+  document.getElementById('lt-ar').classList.toggle('active',l==='ar');
+  document.getElementById('lt-en').classList.toggle('active',l==='en');
+  var t=DT();
+  document.getElementById('dtitle').textContent=t.title;
+  document.getElementById('dsub').textContent=t.sub;
+  document.getElementById('rbtn').textContent=t.refresh;
+  document.getElementById('lbtn').textContent=t.logout;
+  if(_data) renderDashboard(_data,_demo);
+}
+
+(function(){var sf=document.getElementById('stars');for(var i=0;i<80;i++){var el=document.createElement('div');el.className='star';var s=[1,1,2,2,3][Math.floor(Math.random()*5)];el.style.cssText='left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;width:'+s+'px;height:'+s+'px;--d:'+(1.5+Math.random()*3.5).toFixed(1)+'s;--dl:'+(Math.random()*4).toFixed(1)+'s;--lo:'+(0.1+Math.random()*.3).toFixed(2)+';';sf.appendChild(el);}})();
+
+function tryLogin(){
+  if(document.getElementById('pwd').value===ACCESS_CODE){
+    document.getElementById('login').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    setLang('ar'); loadData();
+  } else {
+    var e=document.getElementById('lerr'); e.classList.add('show');
+    setTimeout(function(){e.classList.remove('show');},2000);
+    document.getElementById('pwd').value='';
+  }
+}
+function logout(){document.getElementById('login').style.display='flex';document.getElementById('dashboard').style.display='none';document.getElementById('pwd').value='';}
+document.getElementById('pwd').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+
+function loadData(){
+  var t=DT();
+  document.getElementById('dcontent').innerHTML='<div class="loading-msg"><span class="pulse">'+t.loading+'</span></div>';
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==="PASTE_YOUR_APPS_SCRIPT_URL_HERE"){renderDemo();return;}
+  fetch(APPS_SCRIPT_URL).then(function(r){return r.json();}).then(function(d){_data=d;_demo=false;renderDashboard(d,false);}).catch(renderDemo);
+}
+
+function renderDemo(){
+  var demo={total:47,ranks:{"The Observer":12,"The Pioneer":18,"The Explorer":13,"Mission Commander":4},roles:{"Marketing & Comms":16,"Operations & Admin":12,"Finance & Analysis":10,"HR & People":9},languages:{ar:28,en:19},avgScore:18.4,questions:[2.8,2.1,1.9,2.4,2.0,1.7,2.6,1.8],daily:{"2026-04-07":3,"2026-04-08":5,"2026-04-09":8,"2026-04-10":12,"2026-04-11":9,"2026-04-12":7,"2026-04-13":3}};
+  _data=demo;_demo=true;renderDashboard(demo,true);
+}
+
+function rn(name){var m=DT().rankMap;return m[name]||name;}
+function rl(name){var m=DT().roleMap;return m[name]||name;}
+
+function renderDashboard(data,isDemo){
+  var t=DT(), isAr=DL==='ar';
+  var total=data.total||0,ranks=data.ranks||{},roles=data.roles||{};
+  var langs=data.languages||{},avgScore=data.avgScore||0,qs=data.questions||[],daily=data.daily||{};
+  var arPct=total>0?Math.round(((langs.ar||0)/total)*100):0, enPct=100-arPct;
+  var minQ=0,maxQ=0;
+  qs.forEach(function(q,i){if(q<qs[minQ])minQ=i;if(q>qs[maxQ])maxQ=i;});
+  var RORD=['The Observer','The Pioneer','The Explorer','Mission Commander'];
+  var seen=Object.keys(ranks);
+  var ord=RORD.filter(function(r){return ranks[r];}).concat(seen.filter(function(r){return RORD.indexOf(r)===-1;}));
+  var topEN=ord[0]||'—', topCount=ranks[topEN]||0, topPct=total>0?Math.round((topCount/total)*100):0;
+  var dailyKeys=Object.keys(daily), dailyMax=Math.max.apply(null,dailyKeys.map(function(k){return daily[k];})) ||1;
+  var qnames=t.qnames, avgDisp=Number(avgScore).toFixed(1);
+
+  var h='<div class="'+(isAr?'ar-mode':'en-mode')+'">';
+  if(isDemo) h+='<div class="demo-note">'+t.demoNote+'</div>';
+
+  // Metrics
+  h+='<div class="metrics-grid">';
+  h+=met(total,t.total)+met(avgDisp+'/32',t.avg)+met(Math.round((avgScore/32)*100)+'%',t.avgp);
+  h+=met(langs.ar||0,t.arexp)+met(langs.en||0,t.enexp)+met(rn(topEN).split(' ').slice(0,2).join(' '),t.toprank);
+  h+='</div>';
+
+  // Daily
+  h+='<div class="section"><div class="section-title">📈 '+t.daily+'</div>';
+  if(dailyKeys.length){
+    h+='<div class="daily-chart">';
+    dailyKeys.forEach(function(k){var v=daily[k],hh=Math.max(2,Math.round((v/dailyMax)*62));h+='<div class="day-col"><div class="day-bar" style="height:'+hh+'px;"></div><div class="day-lbl">'+k.split('-')[2]+'</div></div>';});
+    h+='</div>';
+  } else h+='<div class="no-data">'+t.noData+'</div>';
+  h+='</div>';
+
+  // Ranks
+  h+='<div class="section"><div class="section-title">🏆 '+t.rankDist+'</div><div class="bar-list">';
+  ord.forEach(function(rank,i){var c=ranks[rank]||0,p=total>0?Math.round((c/total)*100):0;h+='<div class="bar-item"><div class="bar-label">'+rn(rank)+'</div><div class="bar-track"><div class="bar-fill r'+Math.min(i,3)+'" style="width:'+p+'%"></div></div><div class="bar-val">'+c+' ('+p+'%)</div></div>';});
+  if(!ord.length)h+='<div class="no-data">'+t.noData+'</div>';
+  h+='</div></div>';
+
+  // Roles
+  h+='<div class="section"><div class="section-title">🛸 '+t.roleDist+'</div><div class="bar-list">';
+  Object.keys(roles).sort(function(a,b){return (roles[b]||0)-(roles[a]||0);}).forEach(function(role){var c=roles[role]||0,p=total>0?Math.round((c/total)*100):0;h+='<div class="bar-item"><div class="bar-label">'+rl(role)+'</div><div class="bar-track"><div class="bar-fill r2" style="width:'+p+'%"></div></div><div class="bar-val">'+c+' ('+p+'%)</div></div>';});
+  if(!Object.keys(roles).length)h+='<div class="no-data">'+t.noData+'</div>';
+  h+='</div></div>';
+
+  // Language split
+  h+='<div class="section"><div class="section-title">🌍 '+t.langSplit+'</div><div class="lang-split">';
+  h+='<div class="lang-half"><div class="lang-pct">'+arPct+'%</div><div class="lang-name">'+t.arLbl+'</div></div>';
+  h+='<div class="lang-half"><div class="lang-pct">'+enPct+'%</div><div class="lang-name">'+t.enLbl+'</div></div>';
+  h+='</div></div>';
+
+  // Questions
+  h+='<div class="section"><div class="section-title">📡 '+t.qperf+'</div><div class="q-grid">';
+  qs.forEach(function(score,i){
+    var p=Math.round(((score-1)/3)*100);
+    var cls=i===minQ?'q-weak':i===maxQ?'q-strong':'';
+    var badge=i===minQ?' 🔴':i===maxQ?' 🟢':'';
+    h+='<div class="q-card '+cls+'"><div class="q-name">'+qnames[i]+badge+'</div><div class="q-track"><div class="q-fill" style="width:'+p+'%"></div></div><div class="q-val">'+Number(score).toFixed(2)+'<span style="font-size:10px;opacity:.35;"> / 4</span></div></div>';
+  });
+  if(!qs.length)h+='<div class="no-data" style="grid-column:1/-1">'+t.noData+'</div>';
+  h+='</div><div class="q-note">'+t.qnote+'</div></div>';
+
+  // Insight
+  if(total>=5){
+    var insData={total:total,topRankEN:topEN,topRankPct:topPct,weakQ:qnames[minQ],avgScore:avgDisp,arPct:arPct,enPct:enPct};
+    h+='<div class="insight"><div class="insight-title">'+t.insTitle+'</div><div class="insight-text">'+t.insBody(insData)+'</div></div>';
+  }
+  h+='</div>';
+  document.getElementById('dcontent').innerHTML=h;
+}
+
+function met(val,lbl){return'<div class="metric"><div class="metric-val">'+val+'</div><div class="metric-lbl">'+lbl+'</div></div>';}
+</script>
+</body>
+</html>
