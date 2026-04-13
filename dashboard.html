@@ -116,8 +116,8 @@ body{font-family:system-ui,-apple-system,Arial,sans-serif;background:#000;color:
 </div>
 
 <script>
-var APPS_SCRIPT_URL="PASTE_YOUR_APPS_SCRIPT_URL_HERE";
-var ACCESS_CODE="ogz2025";
+var APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbw44tNnJ-6SnKJw8RfjlNiX3Cc8QkfWHVn7G3ZeV8DB4vsieqT9CymK0o8Yun3m4x57pQ/exec";
+var ACCESS_CODE="OGz2030";
 var DL='ar';
 var _data=null, _demo=false;
 
@@ -186,7 +186,7 @@ document.getElementById('pwd').addEventListener('keydown',function(e){if(e.key==
 function loadData(){
   var t=DT();
   document.getElementById('dcontent').innerHTML='<div class="loading-msg"><span class="pulse">'+t.loading+'</span></div>';
-  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==="PASTE_YOUR_APPS_SCRIPT_URL_HERE"){renderDemo();return;}
+  if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==="https://script.google.com/macros/s/AKfycbw44tNnJ-6SnKJw8RfjlNiX3Cc8QkfWHVn7G3ZeV8DB4vsieqT9CymK0o8Yun3m4x57pQ/exec"){renderDemo();return;}
   fetch(APPS_SCRIPT_URL).then(function(r){return r.json();}).then(function(d){_data=d;_demo=false;renderDashboard(d,false);}).catch(renderDemo);
 }
 
