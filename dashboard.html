@@ -187,7 +187,14 @@ function loadData(){
   var t=DT();
   document.getElementById('dcontent').innerHTML='<div class="loading-msg"><span class="pulse">'+t.loading+'</span></div>';
   if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL===""){renderDemo();return;}
-  fetch(APPS_SCRIPT_URL).then(function(r){return r.json();}).then(function(d){_data=d;_demo=false;renderDashboard(d,false);}).catch(renderDemo);
+  // JSONP — bypasses Google Apps Script CORS redirect issue
+  var cbName='_cb'+Date.now();
+  var s=document.createElement('script');
+  var timer=setTimeout(function(){renderDemo();if(window[cbName])delete window[cbName];},8000);
+  window[cbName]=function(d){clearTimeout(timer);delete window[cbName];s.parentNode&&s.parentNode.removeChild(s);_data=d;_demo=false;renderDashboard(d,false);};
+  s.onerror=function(){clearTimeout(timer);renderDemo();};
+  s.src=APPS_SCRIPT_URL+'?callback='+cbName;
+  document.head.appendChild(s);
 }
 
 function renderDemo(){
